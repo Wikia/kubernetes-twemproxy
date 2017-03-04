@@ -44,7 +44,12 @@ func writeConfig(content string, configFile string) error {
 }
 
 func getEndpoints(clientset *kubernetes.Clientset, serviceName string) ([]string, error) {
-	endpoints, err := clientset.Core().Endpoints("default").Get(serviceName)
+	ns := os.Getenv("KUBE_NAMESPACE")
+	if ns == "" {
+		ns = "default"
+	}
+
+	endpoints, err := clientset.Core().Endpoints(ns).Get(serviceName)
 
 	if err != nil {
 		return nil, err
