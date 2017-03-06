@@ -2,8 +2,11 @@
 Process that monitors service endpoints, creates config file based on template and restarts twemproxy when the endpoints changes
 
 ```
-kubernetes-twemproxy -help
-Usage of ./bin/kubernetes-twemproxy:
+$ kubernetes-twemproxy -help
+Usage of ./kubernetes-twemproxy:
+
+./kubernetes-twemproxy [OPTIONS] [MEMCACHE-ENDPOINT-NAME]
+
   -alsologtostderr
     	log to standard error as well as files
   -config string
@@ -27,6 +30,10 @@ Usage of ./bin/kubernetes-twemproxy:
   -vmodule value
     	comma-separated list of pattern=N settings for file-filtered logging
 ```
+
+e.g. to use endpoint my-memcache-endpoint in namespace my-namespace:
+
+`KUBE_NAMESPACE=my-namespace ./kubernetes-twemproxy my-memcache-endpoint`
 
 ## Tips
 

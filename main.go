@@ -43,13 +43,8 @@ func writeConfig(content string, configFile string) error {
 	return err
 }
 
-func getEndpoints(clientset *kubernetes.Clientset, serviceName string) ([]string, error) {
-	ns := os.Getenv("KUBE_NAMESPACE")
-	if ns == "" {
-		ns = "default"
-	}
-
-	endpoints, err := clientset.Core().Endpoints(ns).Get(serviceName)
+func getEndpoints(clientset *kubernetes.Clientset, serviceName string, namespace string) ([]string, error) {
+	endpoints, err := clientset.Core().Endpoints(namespace).Get(serviceName)
 
 	if err != nil {
 		return nil, err
@@ -98,6 +93,12 @@ type TwemproxyInstance struct {
 
 func main() {
 	var config *rest.Config
+
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage of %s:\n\n%s [OPTIONS] [MEMCACHE-ENDPOINT-NAME]\n\n", os.Args[0], os.Args[0])
+		flag.PrintDefaults()
+	}
+
 	flag.Parse()
 	serviceName := "memcached"
 
@@ -122,9 +123,14 @@ func main() {
 	}
 
 	getConfig := func() string {
-		endpoints, err := getEndpoints(clientset, serviceName)
+		namespace := os.Getenv("KUBE_NAMESPACE")
+		if namespace == "" {
+			namespace = "default"
+		}
+
+		endpoints, err := getEndpoints(clientset, serviceName, namespace)
 		if err != nil {
-			panic(err.Error())
+			panic(fmt.Sprintf("%s (namespace %s)", err.Error(), namespace))
 		}
 
 		if len(endpoints) == 0 {
