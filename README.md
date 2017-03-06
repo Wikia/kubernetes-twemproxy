@@ -55,7 +55,7 @@ metadata:
   labels:
     app: memcached
   name: memcached
-  namespace: fandom
+  namespace: mynamespace
 spec:
   ports:
   - port: 11211
