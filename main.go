@@ -65,7 +65,7 @@ func getEndpoints(clientset *kubernetes.Clientset, serviceName string, namespace
 }
 
 func launchTwemproxy(twemproxyPath string, configPath string) (*TwemproxyInstance, error) {
-	cmd := exec.Command(twemproxyPath, "-c", configPath)
+	cmd := exec.Command(twemproxyPath, "-v", "11", "-c", configPath)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
