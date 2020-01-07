@@ -35,4 +35,8 @@ RUN rm -fr $GOPATH /usr/local/go
 
 WORKDIR /usr/local
 
+RUN chown -R 65534:65534 /etc/twemproxy
+
+USER 65534:65534
+
 ENTRYPOINT ["/usr/local/bin/kubernetes-twemproxy", "-twemproxy", "/usr/sbin/nutcracker"]
