@@ -15,10 +15,11 @@ import (
 )
 
 var (
-	kubeconfig    = flag.String("kubeconfig", "", "absolute path to the kubeconfig file")
-	templatePath  = flag.String("template", "/etc/twemproxy/template.yaml", "absolute path to the template file")
-	configPath    = flag.String("config", "/etc/twemproxy/config.yaml", "absolute path to the config file")
-	twemproxyPath = flag.String("twemproxy", "/usr/sbin/nutcracker", "absolute path to the twemproxy binary")
+	kubeconfig      = flag.String("kubeconfig", "", "absolute path to the kubeconfig file")
+	templatePath    = flag.String("template", "/etc/twemproxy/template.yaml", "absolute path to the template file")
+	configPath      = flag.String("config", "/etc/twemproxy/config.yaml", "absolute path to the config file")
+	twemproxyPath   = flag.String("twemproxy", "/usr/sbin/nutcracker", "absolute path to the twemproxy binary")
+	servicePortName = flag.String("port-name", "memcached", "memcached service port name")
 )
 
 func applyTemplate(templateFile string, endpoints []string) (string, error) {
@@ -54,7 +55,15 @@ func getEndpoints(clientset *kubernetes.Clientset, serviceName string, namespace
 
 	for subidx := range endpoints.Subsets {
 		subset := endpoints.Subsets[subidx]
-		port := strconv.Itoa(int(subset.Ports[0].Port))
+		var port string
+		for _, p := range subset.Ports {
+			if p.Name == *servicePortName {
+				port = strconv.Itoa(int(p.Port))
+			}
+		}
+		if port == "" {
+			return nil, err
+		}
 		for addressidx := range subset.Addresses {
 			ip := subset.Addresses[addressidx].IP
 			res = append(res, ip+":"+port)
