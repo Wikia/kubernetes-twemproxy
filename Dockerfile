@@ -1,4 +1,4 @@
-FROM guilhem/twemproxy
+FROM artifactory.wikia-inc.com/dockerhub/guilhem/twemproxy
 
 ENV GOLANG_VERSION 1.7.1
 ENV GOLANG_DOWNLOAD_URL https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.gz
